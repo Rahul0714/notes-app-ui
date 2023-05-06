@@ -6,14 +6,22 @@ import 'package:http/http.dart' as http;
 
 class ApiServices {
   static String baseUrl = 'https://notes-app-api-qlwb.onrender.com/notes';
-  static void addNote(Note note) async {
-    Uri reqUri = Uri.parse("$baseUrl");
-    var res = await http.post(reqUri);
-    var decoded = jsonDecode(res.body);
-    print(decoded.toString());
+  static Future<void> addNote(Note note) async {
+    try {
+      Uri reqUri = Uri.parse("$baseUrl/add");
+      var res = await http.post(
+        reqUri,
+        body: note.toMap(),
+      );
+
+      var decoded = jsonDecode(res.body);
+      // print(decoded.toString());
+    } catch (err) {
+      print(err);
+    }
   }
 
-  static void deleteNote(Note note) async {
+  static Future<void> deleteNote(Note note) async {
     Uri reqUri = Uri.parse("$baseUrl/delete");
     var res = await http.post(reqUri, body: note.toMap());
     var decoded = jsonDecode(res.body);
@@ -24,8 +32,12 @@ class ApiServices {
     Uri reqUri = Uri.parse("$baseUrl/list");
     var res = await http.post(reqUri, body: {"userId": userId});
     var decoded = jsonDecode(res.body);
-    print("hi" + decoded.toString());
-    print(res.body);
-    return [];
+
+    List<Note> notes = [];
+    for (var note in decoded) {
+      Note newNote = Note.fromMap(note);
+      notes.add(newNote);
+    }
+    return notes;
   }
 }

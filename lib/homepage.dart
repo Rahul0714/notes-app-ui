@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String searchQuery = "";
   Future<void> _dialogBuilder(BuildContext context, Note currentNote) {
     return showDialog<void>(
       context: context,
@@ -60,66 +61,94 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Make Notes"),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: noteProvider.notes.isEmpty
-            ? const Center(
-                child: Text("No Notes yet"),
-              )
-            : GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
-                itemCount: noteProvider.notes.length,
-                itemBuilder: (context, index) {
-                  Note currentNote = noteProvider.notes[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                          builder: (context) => AddNewNotePage(
-                            isUpdate: true,
-                            note: currentNote,
-                          ),
-                        ),
-                      );
-                    },
-                    onLongPress: () {
-                      _dialogBuilder(context, currentNote);
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      padding: const EdgeInsets.all(7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(width: 1, color: Colors.grey),
+      body: (!noteProvider.isLoading)
+          ? SafeArea(
+              child: noteProvider.notes.isEmpty
+                  ? const Center(
+                      child: Text("No Notes yet"),
+                    )
+                  : ListView(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                            decoration:
+                                const InputDecoration(hintText: "Search "),
+                            onChanged: (val) {
+                              setState(() {
+                                searchQuery = val;
+                              });
+                            }),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            currentNote.title!,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 21),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(
-                            height: 7,
-                          ),
-                          Text(
-                            currentNote.content!,
-                            style: TextStyle(
-                                fontSize: 17, color: Colors.grey[700]),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-      ),
+                      (noteProvider.findNote(searchQuery).length > 0)
+                          ? GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2),
+                              itemCount:
+                                  noteProvider.findNote(searchQuery).length,
+                              itemBuilder: (context, index) {
+                                Note currentNote =
+                                    noteProvider.findNote(searchQuery)[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      CupertinoPageRoute(
+                                        builder: (context) => AddNewNotePage(
+                                          isUpdate: true,
+                                          note: currentNote,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  onLongPress: () {
+                                    _dialogBuilder(context, currentNote);
+                                  },
+                                  child: Container(
+                                    margin: const EdgeInsets.all(5),
+                                    padding: const EdgeInsets.all(7),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          width: 1, color: Colors.grey),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          currentNote.title!,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 21),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(
+                                          height: 7,
+                                        ),
+                                        Text(
+                                          currentNote.content!,
+                                          style: TextStyle(
+                                              fontSize: 17,
+                                              color: Colors.grey[700]),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 5,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            )
+                          : const Center(
+                              child: Text("No Notes Found"),
+                            ),
+                    ]),
+            )
+          : const Center(child: CircularProgressIndicator()),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.push(
           context,
