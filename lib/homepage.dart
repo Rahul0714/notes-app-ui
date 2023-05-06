@@ -51,6 +51,41 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  TextEditingController _initController = TextEditingController();
+
+  Future<void> _dialogBuilderInitial(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Username'),
+          content: TextField(
+            controller: _initController,
+            decoration: const InputDecoration(
+                hintText: "Enter Your Username Correctly"),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Provider.of<NoteProvider>(context, listen: false)
+                      .fetchNotes(_initController.text);
+                  _initController.text = "";
+                  Navigator.pop(context);
+                },
+                child: const Text("Submit"))
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _dialogBuilderInitial(context));
+  }
+
   @override
   Widget build(
     BuildContext context,

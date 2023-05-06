@@ -7,9 +7,9 @@ class NoteProvider with ChangeNotifier {
   bool isLoading = true;
   List<Note> notes = [];
 
-  NoteProvider() {
-    fetchNotes();
-  }
+  // NoteProvider() {
+  //   fetchNotes();
+  // }
 
   void sortNotes() {
     notes.sort((a, b) => b.dateadded!.compareTo(a.dateadded!));
@@ -50,8 +50,8 @@ class NoteProvider with ChangeNotifier {
         .toList();
   }
 
-  void fetchNotes() async {
-    notes = await ApiServices.fetchNotes('rahul007');
+  void fetchNotes(String userId) async {
+    notes = await ApiServices.fetchNotes(userId);
     sortNotes();
     isLoading = false;
     notifyListeners();
