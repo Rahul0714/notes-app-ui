@@ -22,11 +22,12 @@ class NoteProvider with ChangeNotifier {
     notifyListeners();
     print(note.title);
     ApiServices.addNote(note);
+    print('done');
   }
 
   void updateNode(Note note) {
-    int indexOfNote = notes
-        .indexOf(notes.firstWhere((element) => element.userId == note.userId));
+    int indexOfNote =
+        notes.indexOf(notes.firstWhere((element) => element.id == note.id));
     notes[indexOfNote] = note;
     sortNotes();
     notifyListeners();
@@ -34,8 +35,8 @@ class NoteProvider with ChangeNotifier {
   }
 
   void deleteNote(Note note) {
-    int indexOfNote = notes
-        .indexOf(notes.firstWhere((element) => element.userId == note.userId));
+    int indexOfNote =
+        notes.indexOf(notes.firstWhere((element) => element.id == note.id));
     notes.removeAt(indexOfNote);
     sortNotes();
     notifyListeners();
