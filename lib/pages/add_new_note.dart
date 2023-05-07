@@ -3,7 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:makenotes/provider/notes_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:uuid/uuid.dart';
 import '../models/Note.dart';
 
 class AddNewNotePage extends StatefulWidget {
@@ -46,6 +46,7 @@ class _AddNewNotePageState extends State<AddNewNotePage> {
 
   void addNewNote() {
     Note newNote = Note();
+    newNote.id = const Uuid().v1();
     newNote.userId = 'rahul007';
     newNote.title = _titleController.text;
     newNote.content = _contentController.text;
